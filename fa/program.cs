@@ -14,50 +14,49 @@ namespace fans
     }
 
     public class FA1
+{
+    private State start;
+    private State only0;
+    private State only1;
+    private State accept;
+
+    public FA1()
     {
-        private State start;
-        private State foundZero;
-        private State accept;
-        private State reject;
-        private State currentState;
+        start = new State { Name = "start", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
+        only0 = new State { Name = "only0", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
+        only1 = new State { Name = "only1", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
+        accept = new State { Name = "accept", IsAcceptState = true, Transitions = new Dictionary<char, State>() };
 
-        public FA1()
+        // start
+        start.Transitions['0'] = only0;
+        start.Transitions['1'] = only1;
+
+        // только нули
+        only0.Transitions['0'] = only0;
+        only0.Transitions['1'] = accept;
+
+        // только единицы
+        only1.Transitions['1'] = only1;
+        only1.Transitions['0'] = accept;
+
+        // есть и 0 и 1
+        accept.Transitions['0'] = accept;
+        accept.Transitions['1'] = accept;
+    }
+
+    public bool Run(IEnumerable<char> input)
+    {
+        State current = start;
+
+        foreach (char symbol in input)
         {
-            start = new State { Name = "start", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
-            foundZero = new State { Name = "foundZero", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
-            accept = new State { Name = "accept", IsAcceptState = true, Transitions = new Dictionary<char, State>() };
-            reject = new State { Name = "reject", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
+            if (!current.Transitions.TryGetValue(symbol, out State next))
+                return false;
 
-            start.Transitions['0'] = foundZero;
-            start.Transitions['1'] = start;
-
-            foundZero.Transitions['0'] = reject;
-            foundZero.Transitions['1'] = accept;
-
-            accept.Transitions['0'] = reject;
-            accept.Transitions['1'] = accept;
-
-            reject.Transitions['0'] = reject;
-            reject.Transitions['1'] = reject;
-
-            currentState = start;
+            current = next;
         }
 
-        public bool Run(IEnumerable<char> input)
-        {
-            currentState = start;
-
-            State current = currentState;
-            foreach (char symbol in input)
-            {
-                if (!current.Transitions.TryGetValue(symbol, out State next))
-                    return false;;
-
-                current = next;
-            }
-
-            return current.IsAcceptState;
-        }
+        return current.IsAcceptState;
     }
 
     public class FA2
