@@ -26,20 +26,12 @@ namespace fans
         only0 = new State { Name = "only0", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
         only1 = new State { Name = "only1", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
         accept = new State { Name = "accept", IsAcceptState = true, Transitions = new Dictionary<char, State>() };
-
-        // start
         start.Transitions['0'] = only0;
         start.Transitions['1'] = only1;
-
-        // только нули
         only0.Transitions['0'] = only0;
         only0.Transitions['1'] = accept;
-
-        // только единицы
         only1.Transitions['1'] = only1;
         only1.Transitions['0'] = accept;
-
-        // есть и 0 и 1
         accept.Transitions['0'] = accept;
         accept.Transitions['1'] = accept;
     }
@@ -58,7 +50,7 @@ namespace fans
 
         return current.IsAcceptState;
     }
-
+}
     public class FA2
     {
         private State q00;
@@ -97,7 +89,7 @@ namespace fans
             foreach (char symbol in input)
             {
                 if (!current.Transitions.ContainsKey(symbol))
-                    return false;;
+                    return false;
 
                 current = current.Transitions[symbol];
             }
