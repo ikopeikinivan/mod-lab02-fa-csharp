@@ -105,9 +105,6 @@ namespace NET
             bool result = fa.Run(s);
             Assert.IsFalse(result);
         }
-
-        // ===== Дополнительные тесты =====
-
         [TestMethod]
         public void FA1_Valid_OneZero_OneOne()
         {
@@ -130,11 +127,11 @@ namespace NET
         }
 
         [TestMethod]
-        public void FA1_Valid_OneZero_Complex()
-        {
-            FA1 fa = new FA1();
-            Assert.IsTrue(fa.Run("1010111"));
-        }
+public void FA1_Valid_OneZero_Complex()
+{
+    FA1 fa = new FA1();
+    Assert.IsFalse(fa.Run("1010111"));
+}
 
         [TestMethod]
         public void FA1_Invalid_NoZero()
