@@ -15,83 +15,43 @@ namespace fans
 
 
   public class FA1
-  {
-    public bool? Run(IEnumerable<char> s)
-    {
-      return false;
-    }
-  }
-
-  public class FA2
-  {
-    public bool? Run(IEnumerable<char> s)
-    {
-      return false;
-    }
-  }
-  
-  public class FA3
-  {
-    public bool? Run(IEnumerable<char> s)
-    {
-      return false;
-    }
-  }
-
-  class Program
-  {
-    static void Main(string[] args)
-    {
-      String s = "01111";
-      FA1 fa1 = new FA1();
-      bool? result1 = fa1.Run(s);
-      Console.WriteLine(result1);
-      FA2 fa2 = new FA2();
-      bool? result2 = fa2.Run(s);
-      Console.WriteLine(result2);
-      FA3 fa3 = new FA3();
-      bool? result3 = fa3.Run(s);
-      Console.WriteLine(result3);
-    }
-  }
-  public class FA1
 {
-    private State S_start;
-    private State S_haveZero_noOne;
-    private State S_haveZero_haveOne;
-    private State S_error;
-    private State InitialState;
+    private State start;
+    private State foundZero;
+    private State accept;
+    private State reject;
+    private State currentState;
 
     public FA1()
     {
-        S_start = new State() { Name = "S_start", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
-        S_haveZero_noOne = new State() { Name = "S_haveZero_noOne", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
-        S_haveZero_haveOne = new State() { Name = "S_haveZero_haveOne", IsAcceptState = true, Transitions = new Dictionary<char, State>() };
-        S_error = new State() { Name = "S_error", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
+        start = new State { Name = "start", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
+        foundZero = new State { Name = "foundZero", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
+        accept = new State { Name = "accept", IsAcceptState = true, Transitions = new Dictionary<char, State>() };
+        reject = new State { Name = "reject", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
 
-        S_start.Transitions['0'] = S_haveZero_noOne;
-        S_start.Transitions['1'] = S_start;
+        start.Transitions['0'] = foundZero;
+        start.Transitions['1'] = start;
 
-        S_haveZero_noOne.Transitions['0'] = S_error;
-        S_haveZero_noOne.Transitions['1'] = S_haveZero_haveOne;
+        foundZero.Transitions['0'] = reject;
+        foundZero.Transitions['1'] = accept;
 
-        S_haveZero_haveOne.Transitions['0'] = S_error;
-        S_haveZero_haveOne.Transitions['1'] = S_haveZero_haveOne;
+        accept.Transitions['0'] = reject;
+        accept.Transitions['1'] = accept;
 
-        S_error.Transitions['0'] = S_error;
-        S_error.Transitions['1'] = S_error;
+        reject.Transitions['0'] = reject;
+        reject.Transitions['1'] = reject;
 
-        InitialState = S_start;
+        currentState = start;
     }
 
-    public bool? Run(IEnumerable<char> s)
+    public bool? Run(IEnumerable<char> input)
     {
-        State current = InitialState;
-        foreach (char c in s)
+        State current = currentState;
+        foreach (char symbol in input)
         {
-            if (!current.Transitions.ContainsKey(c))
+            if (!current.Transitions.TryGetValue(symbol, out State next))
                 return null;
-            current = current.Transitions[c];
+            current = next;
         }
         return current.IsAcceptState;
     }
@@ -99,42 +59,42 @@ namespace fans
 
 public class FA2
 {
-    private State S_even0_even1;
-    private State S_even0_odd1;
-    private State S_odd0_even1;
-    private State S_odd0_odd1;
-    private State InitialState;
+    private State q00;
+    private State q01;
+    private State q10;
+    private State q11;
+    private State active;
 
     public FA2()
     {
-        S_even0_even1 = new State() { Name = "S_even0_even1", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
-        S_even0_odd1 = new State() { Name = "S_even0_odd1", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
-        S_odd0_even1 = new State() { Name = "S_odd0_even1", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
-        S_odd0_odd1 = new State() { Name = "S_odd0_odd1", IsAcceptState = true, Transitions = new Dictionary<char, State>() };
+        q00 = new State { Name = "q00", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
+        q01 = new State { Name = "q01", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
+        q10 = new State { Name = "q10", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
+        q11 = new State { Name = "q11", IsAcceptState = true, Transitions = new Dictionary<char, State>() };
 
-        S_even0_even1.Transitions['0'] = S_odd0_even1;
-        S_even0_even1.Transitions['1'] = S_even0_odd1;
+        q00.Transitions['0'] = q10;
+        q00.Transitions['1'] = q01;
 
-        S_even0_odd1.Transitions['0'] = S_odd0_odd1;
-        S_even0_odd1.Transitions['1'] = S_even0_even1;
+        q01.Transitions['0'] = q11;
+        q01.Transitions['1'] = q00;
 
-        S_odd0_even1.Transitions['0'] = S_even0_even1;
-        S_odd0_even1.Transitions['1'] = S_odd0_odd1;
+        q10.Transitions['0'] = q00;
+        q10.Transitions['1'] = q11;
 
-        S_odd0_odd1.Transitions['0'] = S_even0_odd1;
-        S_odd0_odd1.Transitions['1'] = S_odd0_even1;
+        q11.Transitions['0'] = q01;
+        q11.Transitions['1'] = q10;
 
-        InitialState = S_even0_even1;
+        active = q00;
     }
 
-    public bool? Run(IEnumerable<char> s)
+    public bool? Run(IEnumerable<char> input)
     {
-        State current = InitialState;
-        foreach (char c in s)
+        State current = active;
+        foreach (char symbol in input)
         {
-            if (!current.Transitions.ContainsKey(c))
+            if (!current.Transitions.ContainsKey(symbol))
                 return null;
-            current = current.Transitions[c];
+            current = current.Transitions[symbol];
         }
         return current.IsAcceptState;
     }
@@ -142,38 +102,40 @@ public class FA2
 
 public class FA3
 {
-    private State S0;
-    private State S1;
-    private State S2;
-    private State InitialState;
+    private State A;
+    private State B;
+    private State C;
+    private State current;
 
     public FA3()
     {
-        S0 = new State() { Name = "S0", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
-        S1 = new State() { Name = "S1", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
-        S2 = new State() { Name = "S2", IsAcceptState = true, Transitions = new Dictionary<char, State>() };
+        A = new State { Name = "A", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
+        B = new State { Name = "B", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
+        C = new State { Name = "C", IsAcceptState = true, Transitions = new Dictionary<char, State>() };
 
-        S0.Transitions['0'] = S0;
-        S0.Transitions['1'] = S1;
+        A.Transitions['0'] = A;
+        A.Transitions['1'] = B;
 
-        S1.Transitions['0'] = S0;
-        S1.Transitions['1'] = S2;
+        B.Transitions['0'] = A;
+        B.Transitions['1'] = C;
 
-        S2.Transitions['0'] = S2;
-        S2.Transitions['1'] = S2;
+        C.Transitions['0'] = C;
+        C.Transitions['1'] = C;
 
-        InitialState = S0;
+        current = A;
     }
 
-    public bool? Run(IEnumerable<char> s)
+    public bool? Run(IEnumerable<char> input)
     {
-        State current = InitialState;
-        foreach (char c in s)
+        State activeState = current;
+        foreach (char ch in input)
         {
-            if (!current.Transitions.ContainsKey(c))
+            if (activeState.Transitions.TryGetValue(ch, out State nextState))
+                activeState = nextState;
+            else
                 return null;
-            current = current.Transitions[c];
         }
-        return current.IsAcceptState;
+        return activeState.IsAcceptState;
     }
+}
 }
