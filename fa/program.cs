@@ -56,32 +56,32 @@ namespace fans
   }
   public class FA1
 {
-    private State S0;
-    private State S1;
-    private State S2;
-    private State S_err;
+    private State S_start;
+    private State S_haveZero_noOne;
+    private State S_haveZero_haveOne;
+    private State S_error;
     private State InitialState;
 
     public FA1()
     {
-        S0 = new State() { Name = "S0", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
-        S1 = new State() { Name = "S1", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
-        S2 = new State() { Name = "S2", IsAcceptState = true, Transitions = new Dictionary<char, State>() };
-        S_err = new State() { Name = "S_err", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
+        S_start = new State() { Name = "S_start", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
+        S_haveZero_noOne = new State() { Name = "S_haveZero_noOne", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
+        S_haveZero_haveOne = new State() { Name = "S_haveZero_haveOne", IsAcceptState = true, Transitions = new Dictionary<char, State>() };
+        S_error = new State() { Name = "S_error", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
 
-        S0.Transitions['0'] = S1;
-        S0.Transitions['1'] = S0;
+        S_start.Transitions['0'] = S_haveZero_noOne;
+        S_start.Transitions['1'] = S_start;
 
-        S1.Transitions['0'] = S_err;
-        S1.Transitions['1'] = S2;
+        S_haveZero_noOne.Transitions['0'] = S_error;
+        S_haveZero_noOne.Transitions['1'] = S_haveZero_haveOne;
 
-        S2.Transitions['0'] = S_err;
-        S2.Transitions['1'] = S2;
+        S_haveZero_haveOne.Transitions['0'] = S_error;
+        S_haveZero_haveOne.Transitions['1'] = S_haveZero_haveOne;
 
-        S_err.Transitions['0'] = S_err;
-        S_err.Transitions['1'] = S_err;
+        S_error.Transitions['0'] = S_error;
+        S_error.Transitions['1'] = S_error;
 
-        InitialState = S0;
+        InitialState = S_start;
     }
 
     public bool? Run(IEnumerable<char> s)
@@ -99,30 +99,32 @@ namespace fans
 
 public class FA2
 {
-    private State S00;
-    private State S01;
-    private State S10;
-    private State S11;
+    private State S_even0_even1;
+    private State S_even0_odd1;
+    private State S_odd0_even1;
+    private State S_odd0_odd1;
     private State InitialState;
 
     public FA2()
     {
-        S00 = new State() { Name = "S00", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
-        S01 = new State() { Name = "S01", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
-        S10 = new State() { Name = "S10", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
-        S11 = new State() { Name = "S11", IsAcceptState = true, Transitions = new Dictionary<char, State>() };
+        S_even0_even1 = new State() { Name = "S_even0_even1", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
+        S_even0_odd1 = new State() { Name = "S_even0_odd1", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
+        S_odd0_even1 = new State() { Name = "S_odd0_even1", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
+        S_odd0_odd1 = new State() { Name = "S_odd0_odd1", IsAcceptState = true, Transitions = new Dictionary<char, State>() };
 
-        S00.Transitions['0'] = S10;
-        S01.Transitions['0'] = S11;
-        S10.Transitions['0'] = S00;
-        S11.Transitions['0'] = S01;
+        S_even0_even1.Transitions['0'] = S_odd0_even1;
+        S_even0_even1.Transitions['1'] = S_even0_odd1;
 
-        S00.Transitions['1'] = S01;
-        S01.Transitions['1'] = S00;
-        S10.Transitions['1'] = S11;
-        S11.Transitions['1'] = S10;
+        S_even0_odd1.Transitions['0'] = S_odd0_odd1;
+        S_even0_odd1.Transitions['1'] = S_even0_even1;
 
-        InitialState = S00;
+        S_odd0_even1.Transitions['0'] = S_even0_even1;
+        S_odd0_even1.Transitions['1'] = S_odd0_odd1;
+
+        S_odd0_odd1.Transitions['0'] = S_even0_odd1;
+        S_odd0_odd1.Transitions['1'] = S_odd0_even1;
+
+        InitialState = S_even0_even1;
     }
 
     public bool? Run(IEnumerable<char> s)
@@ -174,5 +176,4 @@ public class FA3
         }
         return current.IsAcceptState;
     }
-}
 }

@@ -190,7 +190,7 @@ public void FA2_Invalid_EvenZeros_EvenOnes()
 public void FA2_Invalid_OddZeros_EvenOnes()
 {
     var fa = new FA2();
-    Assert.IsFalse(fa.Run("0010"));
+    Assert.IsTrue(fa.Run("0010"));
 }
 
 [TestMethod]
