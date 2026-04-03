@@ -8,8 +8,8 @@ namespace fans
 {
     public class State
     {
-        public string Name;
-        public Dictionary<char, State> Transitions;
+        public string Name = "";
+        public Dictionary<char, State> Transitions = new Dictionary<char, State>();
         public bool IsAcceptState;
     }
 
@@ -43,7 +43,7 @@ namespace fans
             currentState = start;
         }
 
-        public bool? Run(IEnumerable<char> input)
+        public bool Run(IEnumerable<char> input)
         {
             currentState = start;
 
@@ -51,7 +51,7 @@ namespace fans
             foreach (char symbol in input)
             {
                 if (!current.Transitions.TryGetValue(symbol, out State next))
-                    return null;
+                    return false;;
 
                 current = next;
             }
@@ -90,7 +90,7 @@ namespace fans
             active = q00;
         }
 
-        public bool? Run(IEnumerable<char> input)
+        public bool Run(IEnumerable<char> input)
         {
             active = q00;
 
@@ -98,7 +98,7 @@ namespace fans
             foreach (char symbol in input)
             {
                 if (!current.Transitions.ContainsKey(symbol))
-                    return null;
+                    return false;;
 
                 current = current.Transitions[symbol];
             }
@@ -132,7 +132,7 @@ namespace fans
             current = A;
         }
 
-        public bool? Run(IEnumerable<char> input)
+        public bool Run(IEnumerable<char> input)
         {
             current = A;
 
@@ -142,7 +142,7 @@ namespace fans
                 if (activeState.Transitions.TryGetValue(ch, out State nextState))
                     activeState = nextState;
                 else
-                    return null;
+                    return false;;
             }
 
             return activeState.IsAcceptState;
