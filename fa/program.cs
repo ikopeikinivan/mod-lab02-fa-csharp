@@ -15,30 +15,39 @@ namespace fans
 
     public class FA1
 {
-    private State start;
-    private State only0;
-    private State only1;
-    private State accept;
+    private State s0;
+    private State s1;
+    private State s2;
+    private State s3;
+    private State dead;
 
     public FA1()
     {
-        start = new State { Name = "start", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
-        only0 = new State { Name = "only0", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
-        only1 = new State { Name = "only1", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
-        accept = new State { Name = "accept", IsAcceptState = true, Transitions = new Dictionary<char, State>() };
-        start.Transitions['0'] = only0;
-        start.Transitions['1'] = only1;
-        only0.Transitions['0'] = only0;
-        only0.Transitions['1'] = accept;
-        only1.Transitions['1'] = only1;
-        only1.Transitions['0'] = accept;
-        accept.Transitions['0'] = accept;
-        accept.Transitions['1'] = accept;
+        s0 = new State { Name = "s0", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
+        s1 = new State { Name = "s1", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
+        s2 = new State { Name = "s2", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
+        s3 = new State { Name = "s3", IsAcceptState = true, Transitions = new Dictionary<char, State>() };
+        dead = new State { Name = "dead", IsAcceptState = false, Transitions = new Dictionary<char, State>() };
+
+        s0.Transitions['0'] = s2;
+        s0.Transitions['1'] = s1;
+
+        s1.Transitions['0'] = s3;
+        s1.Transitions['1'] = s1;
+
+        s2.Transitions['0'] = dead;
+        s2.Transitions['1'] = s3;
+
+        s3.Transitions['0'] = dead;
+        s3.Transitions['1'] = s3;
+
+        dead.Transitions['0'] = dead;
+        dead.Transitions['1'] = dead;
     }
 
     public bool Run(IEnumerable<char> input)
     {
-        State current = start;
+        State current = s0;
 
         foreach (char symbol in input)
         {
